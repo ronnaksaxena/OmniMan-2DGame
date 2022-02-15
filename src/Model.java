@@ -48,7 +48,7 @@ public class Model {
 	private GunObject Gun1;
 	
 
-	public Model() {
+	public Model() { 
 		//setup game world 
 		//Player 
 		Player= new GameObject("res/OMDirects.png",50,80,new Point3f(500,500,0));
@@ -64,7 +64,7 @@ public class Model {
 		int gX = 13;
 		int gY = 35;
 		//need to add Right.png or Left.png to texture
-		Gun1 = new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+gX, Player.getCentre().getY()+gY,0), 0.25,  0.25, 45);
+		Gun1 = new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+gX, Player.getCentre().getY()+gY,0), 0.25,  0.25, 0);
 
 
 
@@ -175,17 +175,14 @@ public class Model {
 			public void actionPerformed(ActionEvent e) {
 				if (isTimerRunning) {
 					CreateBullet();
-					System.out.println("got here");
 				}
 			}
 		});
 		if(Controller.getInstance().getMousePressed() && !(isTimerRunning)) {
-			System.out.println("Timer started!");	
 			t.start();
 			isTimerRunning = true;
 		}
 		if(!(Controller.getInstance().getMousePressed()) && isTimerRunning) {
-			System.out.println("Timer stopped!");
 			t.stop();
 			isTimerRunning = false;
 		}
@@ -238,8 +235,29 @@ public class Model {
 
 	}
 	
+	//directly above is 0, 90 to right is 90, directly below is 180, 90 to left is 270
+	//method to find angle between 2 coordinates
+	public static double calculateAngle(double x1, double y1, double x2, double y2)
+	{
+		double angle = Math.toDegrees(Math.atan2(x2 - x1, y2 - y1));
+		// Keep angle between 0 and 360
+		angle = angle + Math.ceil( -angle / 360 ) * 360;
+
+		return angle;
+	}
+	
 	//To rotate gun to follow mouse
 	private void gunLogic() {
+		//find angle between gun and mouse
+		double gunX = (double)Gun1.getCentre().getX();
+		double gunY = (double)Gun1.getCentre().getY();
+		double mouseX = (double)controller.getMouseX();
+		double mouseY = (double)controller.getMouseY();
+		
+		//have to switch position of mouseY and gunY since Y decreases when you move up
+		double theta = calculateAngle(gunX, mouseY, mouseX, gunY);
+		
+		Gun1.setAngle(theta);
 		
 	}
 

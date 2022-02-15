@@ -97,11 +97,13 @@ public class Viewer extends JPanel {
 		}
 		return img;
 	}
+	
+
 
 
 	public void paintComponent(Graphics g) {
 
-		super.paintComponent(g);
+		super.paintComponent(g); 
 		CurrentAnimationTime++; // runs animation time step 
 
 
