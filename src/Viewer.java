@@ -136,13 +136,14 @@ public class Viewer extends JPanel {
 		}
 
 
-		//Draw Bullets 
-		// change back 
+		//Draw Bullets
+		// Params: (int x, int y, double scaleX, double scaleY, String texture, double angle, Graphics g)
 		gameworld.getBullets().forEach((temp) -> 
 		{ 
-			drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (int) temp.getWidth(), (int) temp.getHeight(), temp.getTexture(),g);	 
+			drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (double) temp.getScaleX(), (double) temp.getScaleY(), temp.getTexture(), temp.getAngle(), g);	 
 		}); 
 
+		
 		//Draw Enemies   
 		gameworld.getEnemies().forEach((temp) -> 
 		{
@@ -180,18 +181,16 @@ public class Viewer extends JPanel {
 		}
 	}
 
-	private void drawBullet(int x, int y, int width, int height, String texture,Graphics g)
+	private void drawBullet (int x, int y, double scaleX, double scaleY, String texture, double angle, Graphics g)
 	{
-		File TextureToLoad = new File(texture);  //should work okay on OSX and Linux but check if you have issues depending your eclipse install or if your running this without an IDE 
-		try {
-			Image myImage = ImageIO.read(TextureToLoad); 
-			//													height x width
-			g.drawImage(myImage, x,y, x+width, y+height, 0 , 0, 28, 38, null); 
+		//TRYING TO DRAW BULLETS
+		BufferedImage BulletImg = LoadImage(texture);
+		AffineTransform at = AffineTransform.getTranslateInstance(x, y);
+		at.rotate(Math.toRadians(angle), (((double)BulletImg.getWidth()) * scaleX)/2, (((double)BulletImg.getHeight())*scaleY)/2);
+		at.scale(scaleX, scaleY);
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.drawImage(BulletImg, at, null);
 	}
 
 
@@ -231,7 +230,7 @@ public class Viewer extends JPanel {
 		//if mouse is left of player points gun left
 		if (controller.getMouseX() < gameworld.getPlayer().getCentre().getX()) {
 			
-			texture = texture + "Left.png";
+			texture = texture + "Left.png"; 
 		}
 		//if mouse is right of player points gun right
 		else {

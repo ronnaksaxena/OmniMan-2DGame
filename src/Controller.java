@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.imageio.*;
 import java.awt.image.*;
 import java.io.*;
+import java.lang.Math.*; //Math.PI Math.sin(double radians) Math.cos(double radians) all of type double
 
 /*
  * Created by Abraham Campbell on 15/01/2020.
@@ -52,6 +53,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 	private static boolean mouseClicked = false;
 	public static int mouseX = 0;
 	public static int mouseY = 0;
+	public static int mouseClicks = 0;
 
 	private static final Controller instance = new Controller();
 
@@ -172,8 +174,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-
-
+		this.mouseClicks += 1;
 	}
 
 	@Override
@@ -231,6 +232,10 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 	
 	public int getMouseY() {
 		return mouseY;
+	}
+	
+	public int getMouseClicks() {
+		return Controller.mouseClicks;
 	}
 	
 	

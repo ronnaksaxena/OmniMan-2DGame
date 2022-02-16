@@ -6,12 +6,14 @@ import util.GameObject;
 import util.Point3f;
 import util.Vector3f;
 import util.GunObject;
+import util.BulletObject;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import javax.swing.Timer;
+import java.lang.Math.*; //Math.PI Math.sin(double radians) Math.cos(double radians) all of type double
 
 /*
  * Created by Abraham Campbell on 15/01/2020.
@@ -42,10 +44,11 @@ public class Model {
 	private  GameObject Player;
 	private Controller controller = Controller.getInstance();
 	private  CopyOnWriteArrayList<GameObject> EnemiesList  = new CopyOnWriteArrayList<GameObject>();
-	private  CopyOnWriteArrayList<GameObject> BulletList  = new CopyOnWriteArrayList<GameObject>();
+	private  CopyOnWriteArrayList<BulletObject> BulletList  = new CopyOnWriteArrayList<BulletObject>();
 	private boolean isTimerRunning = false;
 	private int Score=0;
 	private GunObject Gun1;
+	private int curClicks = 0;
 	
 
 	public Model() { 
@@ -99,7 +102,7 @@ public class Model {
 		// using enhanced for-loop style as it makes it alot easier both code wise and reading wise too 
 		for (GameObject temp : EnemiesList) 
 		{
-			for (GameObject Bullet : BulletList) 
+			for (BulletObject Bullet : BulletList) 
 			{
 				if ( Math.abs(temp.getCentre().getX()- Bullet.getCentre().getX())< temp.getWidth() 
 						&& Math.abs(temp.getCentre().getY()- Bullet.getCentre().getY()) < temp.getHeight())
@@ -139,20 +142,39 @@ public class Model {
 			}
 		}
 	}
-
+	
+	//to calculate bullet movement
+	public static double degreeToRadians (double theta) {
+        return (theta/180.0) * Math.PI;
+    }
+    public static double nextXPosition (double angle) {
+        return Math.cos(degreeToRadians(angle));
+    }
+    public static double nextYPosition (double angle) {
+        return Math.sin(degreeToRadians(angle));
+    }
 	private void bulletLogic() {
-		// TODO Auto-generated method stub
 		// move bullets 
+		//multiple to change speed of bullet
+		double speedFactor = 1;
 
-		for (GameObject temp : BulletList) 
+		for (BulletObject temp : BulletList) 
 		{
 			//check to move them
-
-			temp.getCentre().ApplyVector(new Vector3f(0,1,0));
+			//get angle of direction
+			double theta = temp.getAngle();
+			double x = nextXPosition(theta);
+			double y = nextYPosition(theta);
+			y = y * -1; //since y plane is inverse
+			System.out.println("angle: " + "X: " + x + "Y: " + y);
+			temp.getCentre().ApplyVector( new Vector3f((float)(x * speedFactor), (float)(y * speedFactor),(float) 0.0));
+			
+			
+			
 			//see if they hit anything 
 
-			//see if they get to the top of the screen ( remember 0 is the top 
-			if (temp.getCentre().getY()==0)
+			//remove if they go out of boundary
+			if (temp.getCentre().getY()<=0 || temp.getCentre().getY() >= 800 || temp.getCentre().getX() <= 0 || temp.getCentre().getX() >= 950)
 			{
 				BulletList.remove(temp);
 			} 
@@ -178,13 +200,20 @@ public class Model {
 				}
 			}
 		});
-		if(Controller.getInstance().getMousePressed() && !(isTimerRunning)) {
+		if(controller.getMousePressed() && !(isTimerRunning)) {
 			t.start();
 			isTimerRunning = true;
 		}
-		if(!(Controller.getInstance().getMousePressed()) && isTimerRunning) {
+		if(!(controller.getMousePressed()) && isTimerRunning) {
 			t.stop();
 			isTimerRunning = false;
+		}
+		
+		//Fires bullet is player clicks mouse
+		if (controller.getMouseClicks() > this.curClicks)  {
+			System.out.println("was clicked!");
+			CreateBullet();
+			this.curClicks = controller.getMouseClicks();
 		}
 		
 		
@@ -262,9 +291,23 @@ public class Model {
 	}
 
 	private void CreateBullet() {
-		int dX = 17; //X offset
-		int dY = -20; //Y offset
-		BulletList.add(new GameObject("res/bullet1.png",20,40,new Point3f(Player.getCentre().getX()+dX,Player.getCentre().getY()+dY,0.0f)));
+		//trying to find bullet angle
+		//find angle between bullet and mouse
+		double gunX = (double)Gun1.getCentre().getX();
+		double gunY = (double)Gun1.getCentre().getY();
+		double mouseX = (double)controller.getMouseX();
+		double mouseY = (double)controller.getMouseY();
+		
+		//have to switch position of mouseY and gunY since Y decreases when you move up
+		double theta = calculateAngle(gunX, mouseY, mouseX, gunY);
+		//since bullets start pointed to right
+		theta -= 90;
+		
+		
+		int dX = 0; //X offset
+		int dY = 0; //Y offset
+		
+		BulletList.add(new BulletObject("res/bullet1.png", new Point3f(Player.getCentre().getX()+dX,Player.getCentre().getY()+dY,0.0f), 1.0, 1.0, theta));
 
 	}
 
@@ -276,7 +319,7 @@ public class Model {
 		return EnemiesList;
 	}
 
-	public CopyOnWriteArrayList<GameObject> getBullets() {
+	public CopyOnWriteArrayList<BulletObject> getBullets() {
 		return BulletList;
 	}
 
