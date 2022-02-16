@@ -124,24 +124,39 @@ public class Viewer extends JPanel {
 		//Draw background 
 		drawBackground(g);
 
-
+		/*
+		 *  Want to draw bullets inbetween player and gun
+		 * 
+		 * 
+		 */
+		
 		//Draws gun first if player is moving up
 		if (gameworld.getPlayer().getDirection() == 1) {
 			drawGun(gunX, gunY, gunScaleX, gunScaleY, gunTexture, gunAngle, g);
+			
+			//Draw Bullets
+			// Params: (int x, int y, double scaleX, double scaleY, String texture, double angle, Graphics g)
+			gameworld.getBullets().forEach((temp) -> 
+			{ 
+				drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (double) temp.getScaleX(), (double) temp.getScaleY(), temp.getTexture(), temp.getAngle(), g);	 
+			});
+			
 			drawPlayer(x, y, width, height, texture,g);
 		}
 		else {
 			drawPlayer(x, y, width, height, texture,g);
 			drawGun(gunX, gunY, gunScaleX, gunScaleY, gunTexture, gunAngle, g);
+			
+			//Draw Bullets
+			// Params: (int x, int y, double scaleX, double scaleY, String texture, double angle, Graphics g)
+			gameworld.getBullets().forEach((temp) -> 
+			{ 
+				drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (double) temp.getScaleX(), (double) temp.getScaleY(), temp.getTexture(), temp.getAngle(), g);	 
+			});
 		}
 
 
-		//Draw Bullets
-		// Params: (int x, int y, double scaleX, double scaleY, String texture, double angle, Graphics g)
-		gameworld.getBullets().forEach((temp) -> 
-		{ 
-			drawBullet((int) temp.getCentre().getX(), (int) temp.getCentre().getY(), (double) temp.getScaleX(), (double) temp.getScaleY(), temp.getTexture(), temp.getAngle(), g);	 
-		}); 
+		 
 
 		
 		//Draw Enemies   

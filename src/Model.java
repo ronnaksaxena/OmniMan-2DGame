@@ -57,10 +57,10 @@ public class Model {
 		Player= new GameObject("res/OMDirects.png",50,80,new Point3f(500,500,0));
 		//Enemies  starting with four 
 
-		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*50+400 ),0,0))); 
-		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*50+500 ),0,0)));
-		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*100+500 ),0,0)));
-		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*100+400 ),0,0)));
+		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0))); 
+		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0)));
+		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0)));
+		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0)));
 		
 		//gun
 		//gun offsets for position
@@ -138,7 +138,7 @@ public class Model {
 		{
 			while (EnemiesList.size()<6)
 			{
-				EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),0,0))); 
+				EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0))); 
 			}
 		}
 	}
@@ -166,7 +166,6 @@ public class Model {
 			double x = nextXPosition(theta);
 			double y = nextYPosition(theta);
 			y = y * -1; //since y plane is inverse
-			System.out.println("angle: " + "X: " + x + "Y: " + y);
 			temp.getCentre().ApplyVector( new Vector3f((float)(x * speedFactor), (float)(y * speedFactor),(float) 0.0));
 			
 			
@@ -174,7 +173,7 @@ public class Model {
 			//see if they hit anything 
 
 			//remove if they go out of boundary
-			if (temp.getCentre().getY()<=0 || temp.getCentre().getY() >= 800 || temp.getCentre().getX() <= 0 || temp.getCentre().getX() >= 950)
+			if (temp.getCentre().getY()<=0 || temp.getCentre().getY() >= 800 || temp.getCentre().getX() <= 0 || temp.getCentre().getX() >= 900)
 			{
 				BulletList.remove(temp);
 			} 
@@ -191,7 +190,7 @@ public class Model {
 		//BULLET CONTROLS
 		//Timer to fire bullet every 2 seconds
 		
-		Timer t = new Timer(100 , new ActionListener() {
+		Timer t = new Timer(200 , new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -222,27 +221,38 @@ public class Model {
 
 		if(Controller.getInstance().isKeyAPressed()) {
 			Player.setDirection(4);
-			Player.getCentre().ApplyVector( new Vector3f(-2,0,0));
-			Gun1.getCentre().ApplyVector( new Vector3f(-2,0,0));
+			//checking for OOB
+			if (Player.getCentre().getX() > 0) {
+				Player.getCentre().ApplyVector( new Vector3f(-2,0,0));
+				Gun1.getCentre().ApplyVector( new Vector3f(-2,0,0));
+			}
+			
 		}
-
 		else if(Controller.getInstance().isKeyDPressed())
 		{
 			Player.setDirection(2);
-			Player.getCentre().ApplyVector( new Vector3f(2,0,0));
-			Gun1.getCentre().ApplyVector( new Vector3f(2,0,0));
+			if (Player.getCentre().getX() < 900) {
+				Player.getCentre().ApplyVector( new Vector3f(2,0,0));
+				Gun1.getCentre().ApplyVector( new Vector3f(2,0,0));
+			}
+			
 		}
-
 		else if(Controller.getInstance().isKeyWPressed())
 		{
 			Player.setDirection(1);
-			Player.getCentre().ApplyVector( new Vector3f(0,2,0));
-			Gun1.getCentre().ApplyVector( new Vector3f(0,2,0));
+			if (Player.getCentre().getX() > 0) {
+				Player.getCentre().ApplyVector( new Vector3f(0,2,0));
+				Gun1.getCentre().ApplyVector( new Vector3f(0,2,0));
+				}
+			
 		}
 		else if(Controller.getInstance().isKeySPressed()) {
 			Player.setDirection(3);
-			Player.getCentre().ApplyVector( new Vector3f(0,-2,0));
-			Gun1.getCentre().ApplyVector( new Vector3f(0,-2,0));
+			if (Player.getCentre().getY() < 800) {
+				Player.getCentre().ApplyVector( new Vector3f(0,-2,0));
+				Gun1.getCentre().ApplyVector( new Vector3f(0,-2,0));
+			}
+			
 		}
 		else {
 			Player.setDirection(0);
@@ -304,8 +314,8 @@ public class Model {
 		theta -= 90;
 		
 		
-		int dX = 0; //X offset
-		int dY = 0; //Y offset
+		int dX = 10; //X offset
+		int dY = 25; //Y offset
 		
 		BulletList.add(new BulletObject("res/bullet1.png", new Point3f(Player.getCentre().getX()+dX,Player.getCentre().getY()+dY,0.0f), 1.0, 1.0, theta));
 
