@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import javax.swing.Timer;
 import java.lang.Math.*; //Math.PI Math.sin(double radians) Math.cos(double radians) all of type double
+import java.util.Random;
 
 /*
  * Created by Abraham Campbell on 15/01/2020.
@@ -60,7 +61,8 @@ public class Model {
 		//Enemies  starting with four 
 		for (int i = 0; i < 4; i++) {
 			// constructor: (String textureLocation,int width,int height,Point3f centre, double curAngle)
-			EnemiesList.add(new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0), 0));
+			
+			EnemiesList.add(new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(((float)Math.random()*1000),0,0), 0));
 		}
 		
 		//gun
@@ -116,35 +118,19 @@ public class Model {
 		}
 
 	}
+	
+	//directly above is 0, 90 to right is 90, directly below is 180, 90 to left is 270
+	//method to find angle between 2 coordinates
+	public static double calculateAngle(double x1, double y1, double x2, double y2)
+	{
+		double angle = Math.toDegrees(Math.atan2(x2 - x1, y2 - y1));
+		// Keep angle between 0 and 360
+		angle = angle + Math.ceil( -angle / 360 ) * 360;
 
-	private void enemyLogic() {
-		// TODO Auto-generated method stub
-		for (EnemyObject temp : EnemiesList) 
-		{
-			// Move enemies 
-
-			temp.getCentre().ApplyVector(new Vector3f(0,-1,0));
-
-			//see if they get to the top of the screen ( remember 0 is the top 
-			if (temp.getCentre().getY()==900.0f)  // current boundary need to pass value to model 
-			{
-				EnemiesList.remove(temp);
-
-				// enemies win so score decreased 
-				Score--;
-			} 
-		}
-
-		if (EnemiesList.size()<2)
-		{
-			while (EnemiesList.size()<6)
-			{
-				EnemiesList.add(new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0), 0)); 
-			}
-		}
+		return angle;
 	}
 	
-	//to calculate bullet movement
+	//to calculate bullet  and enemy movement
 	public static double degreeToRadians (double theta) {
         return (theta/180.0) * Math.PI;
     }
@@ -154,6 +140,69 @@ public class Model {
     public static double nextYPosition (double angle) {
         return Math.sin(degreeToRadians(angle));
     }
+    
+    
+
+    
+
+	private void enemyLogic() {
+		// TODO Auto-generated method stub
+		for (EnemyObject temp : EnemiesList) 
+		{
+			// Move enemies towards player
+			
+			//find angle between enemy and player
+			double eX = (double)temp.getCentre().getX();
+			double eY = (double)temp.getCentre().getY();
+			double pX = (double)Player.getCentre().getX();
+			double pY = (double)Player.getCentre().getY();
+			
+			//have to switch position of Enemy Y and Player Y since Y decreases when you move up
+			double theta = calculateAngle(eX, pY, pX, eY);
+			
+			//finds next position to move enemy
+			double speedFactor = 1;
+			double y = nextXPosition(theta); //swapped x and y for enemies? Works somehow!!
+			double x = nextYPosition(theta);
+			temp.getCentre().ApplyVector( new Vector3f((float)(x * speedFactor), (float)(y * speedFactor),(float) 0.0));
+			
+
+			 
+		}
+		
+		
+		 if (EnemiesList.size()<2)
+		{
+			while (EnemiesList.size()<5)
+			{
+				float xSpawn = getXSpawn((double) Player.getCentre().getX(), 200.0);
+				float ySpawn = getYSpawn((double) Player.getCentre().getY(), 200.0);
+				EnemiesList.add(new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(xSpawn,ySpawn,0), 0)); 
+			}
+		}
+
+		
+	}
+	
+	//find valid spawning points given player position and distance away you want to spawn
+	
+	private float getXSpawn(double playerX, double distance) {
+		Random r = new Random();
+    	//picks a random point [0, (pX - distance), (pX + distance), (distance,950)]
+    	double xSpawn = r.nextBoolean() ? Math.random()*(playerX-distance) : playerX+distance +Math.random()*(950.0-(playerX+distance));
+    	return (float) xSpawn;
+	}
+	
+	private float getYSpawn(double playerY, double distance) {
+		Random r = new Random();
+    	//picks a random point [0, (pY - distance), (pY + distance), (distance,800)]
+    	double ySpawn = r.nextBoolean() ? Math.random()*(playerY-distance) : playerY+distance +Math.random()*(800-(playerY+distance));
+    	return (float) ySpawn;
+	}
+
+
+    
+
 	private void bulletLogic() {
 		// move bullets 
 		//multiple to change speed of bullet
@@ -275,16 +324,7 @@ public class Model {
 
 	}
 	
-	//directly above is 0, 90 to right is 90, directly below is 180, 90 to left is 270
-	//method to find angle between 2 coordinates
-	public static double calculateAngle(double x1, double y1, double x2, double y2)
-	{
-		double angle = Math.toDegrees(Math.atan2(x2 - x1, y2 - y1));
-		// Keep angle between 0 and 360
-		angle = angle + Math.ceil( -angle / 360 ) * 360;
 
-		return angle;
-	}
 	
 	//To rotate gun to follow mouse
 	private void gunLogic() {
