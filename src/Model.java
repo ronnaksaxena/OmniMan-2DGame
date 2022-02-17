@@ -156,7 +156,7 @@ public class Model {
 	private void bulletLogic() {
 		// move bullets 
 		//multiple to change speed of bullet
-		double speedFactor = 1;
+		double speedFactor = 2;
 
 		for (BulletObject temp : BulletList) 
 		{
