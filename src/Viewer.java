@@ -145,6 +145,7 @@ public class Viewer extends JPanel {
 		}
 		else {
 			drawPlayer(x, y, width, height, texture,g);
+			
 			drawGun(gunX, gunY, gunScaleX, gunScaleY, gunTexture, gunAngle, g);
 			
 			//Draw Bullets
@@ -173,8 +174,8 @@ public class Viewer extends JPanel {
 			Image myImage = ImageIO.read(TextureToLoad);
 			//The spirte is 32x32 pixel wide and 4 of them are placed together so we need to grab a different one each time 
 			//remember your training :-) computer science everything starts at 0 so 32 pixels gets us to 31  
-			int currentPositionInAnimation= ((int)(CurrentAnimationTime%7))*365; //slows down animation so every 10 frames we get another frame so every 100ms 
-			g.drawImage(myImage, x,y, x+width, y+height, currentPositionInAnimation  , 0, currentPositionInAnimation+364, 365, null); 
+			int currentPositionInAnimation= ((int)((CurrentAnimationTime%14)/2))*100; //slows down animation so every 10 frames we get another frame so every 100ms 
+			g.drawImage(myImage, x,y, x+width, y+height, currentPositionInAnimation  , 0, currentPositionInAnimation+99, 100, null); 
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -219,10 +220,10 @@ public class Viewer extends JPanel {
 			
 			int currentDirection = (int) gameworld.getPlayer().getDirection(); //find direction
 			int yOffset = currentDirection * 24;
-			int currentPositionInAnimation= ((int) (CurrentAnimationTime%4))*14;
+			int currentPositionInAnimation= ((int)((CurrentAnimationTime%12)/3)) *14;
 			//want to slow down idle animation
 			if (currentDirection == 0) {
-				currentPositionInAnimation = ((int) (CurrentAnimationTime%12)/3)*14;
+				currentPositionInAnimation = ((int) ((CurrentAnimationTime%20)/5))*14;
 			}
 			//center, dimensions, bottom left, top right
 			g.drawImage(myImage, x,y, x+width, y+height, currentPositionInAnimation  , yOffset, currentPositionInAnimation+13, yOffset+23, null); 

@@ -161,10 +161,18 @@ public class Model {
 			double theta = calculateAngle(eX, pY, pX, eY);
 			
 			//finds next position to move enemy
-			double speedFactor = 1;
+			double speedFactor = 0.75;
 			double y = nextXPosition(theta); //swapped x and y for enemies? Works somehow!!
-			double x = nextYPosition(theta);
+			double x = nextYPosition(theta); 
 			temp.getCentre().ApplyVector( new Vector3f((float)(x * speedFactor), (float)(y * speedFactor),(float) 0.0));
+			
+			//adjusted shell for collision since player center is actually top left
+			
+			if ( Math.abs(temp.getCentre().getX()- (Player.getCentre().getX()-20))< (temp.getWidth()-25) 
+					&& Math.abs(temp.getCentre().getY()- (Player.getCentre().getY()-20)) < (temp.getHeight()-20)) {
+				EnemiesList.remove(temp);
+				Score -= 20;
+			}
 			
 
 			 
@@ -240,7 +248,7 @@ public class Model {
 		//BULLET CONTROLS
 		//Timer to fire bullet every 2 seconds
 		
-		Timer t = new Timer(200 , new ActionListener() {
+		Timer t = new Timer(300 , new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -260,7 +268,6 @@ public class Model {
 		
 		//Fires bullet is player clicks mouse
 		if (controller.getMouseClicks() > this.curClicks)  {
-			System.out.println("was clicked!");
 			CreateBullet();
 			this.curClicks = controller.getMouseClicks();
 		}
@@ -290,7 +297,7 @@ public class Model {
 		else if(Controller.getInstance().isKeyWPressed())
 		{
 			Player.setDirection(1);
-			if (Player.getCentre().getX() > 0) {
+			if (Player.getCentre().getY() > 0) {
 				Player.getCentre().ApplyVector( new Vector3f(0,2,0));
 				Gun1.getCentre().ApplyVector( new Vector3f(0,2,0));
 				}
@@ -298,7 +305,7 @@ public class Model {
 		}
 		else if(Controller.getInstance().isKeySPressed()) {
 			Player.setDirection(3);
-			if (Player.getCentre().getY() < 800) {
+			if (Player.getCentre().getY() < 700) {
 				Player.getCentre().ApplyVector( new Vector3f(0,-2,0));
 				Gun1.getCentre().ApplyVector( new Vector3f(0,-2,0));
 			}
