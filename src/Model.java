@@ -7,6 +7,7 @@ import util.Point3f;
 import util.Vector3f;
 import util.GunObject;
 import util.BulletObject;
+import util.EnemyObject;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,7 +44,7 @@ public class Model {
 
 	private  GameObject Player;
 	private Controller controller = Controller.getInstance();
-	private  CopyOnWriteArrayList<GameObject> EnemiesList  = new CopyOnWriteArrayList<GameObject>();
+	private  CopyOnWriteArrayList<EnemyObject> EnemiesList  = new CopyOnWriteArrayList<EnemyObject>();
 	private  CopyOnWriteArrayList<BulletObject> BulletList  = new CopyOnWriteArrayList<BulletObject>();
 	private boolean isTimerRunning = false;
 	private int Score=0;
@@ -55,12 +56,12 @@ public class Model {
 		//setup game world 
 		//Player 
 		Player= new GameObject("res/OMDirects.png",50,80,new Point3f(500,500,0));
+		
 		//Enemies  starting with four 
-
-		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0))); 
-		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0)));
-		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0)));
-		EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0)));
+		for (int i = 0; i < 4; i++) {
+			// constructor: (String textureLocation,int width,int height,Point3f centre, double curAngle)
+			EnemiesList.add(new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0), 0));
+		}
 		
 		//gun
 		//gun offsets for position
@@ -100,7 +101,7 @@ public class Model {
 		//maybe make quad tree later
 		//see if they hit anything 
 		// using enhanced for-loop style as it makes it alot easier both code wise and reading wise too 
-		for (GameObject temp : EnemiesList) 
+		for (EnemyObject temp : EnemiesList) 
 		{
 			for (BulletObject Bullet : BulletList) 
 			{
@@ -118,7 +119,7 @@ public class Model {
 
 	private void enemyLogic() {
 		// TODO Auto-generated method stub
-		for (GameObject temp : EnemiesList) 
+		for (EnemyObject temp : EnemiesList) 
 		{
 			// Move enemies 
 
@@ -138,7 +139,7 @@ public class Model {
 		{
 			while (EnemiesList.size()<6)
 			{
-				EnemiesList.add(new GameObject("res/covidCell1.png",100,100,new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0))); 
+				EnemiesList.add(new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(((float)Math.random()*1000),(float)Math.random()*900,0), 0)); 
 			}
 		}
 	}
@@ -325,7 +326,7 @@ public class Model {
 		return Player;
 	}
 
-	public CopyOnWriteArrayList<GameObject> getEnemies() {
+	public CopyOnWriteArrayList<EnemyObject> getEnemies() {
 		return EnemiesList;
 	}
 
