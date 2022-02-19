@@ -6,6 +6,7 @@ import util.GameObject;
 import util.Point3f;
 import util.Vector3f;
 import util.GunObject;
+import util.PlayerObject;
 import util.BulletObject;
 import util.EnemyObject;
 
@@ -43,7 +44,7 @@ SOFTWARE.
  */ 
 public class Model {
 
-	private  GameObject Player;
+	private  PlayerObject Player;
 	private Controller controller = Controller.getInstance();
 	private  CopyOnWriteArrayList<EnemyObject> EnemiesList  = new CopyOnWriteArrayList<EnemyObject>();
 	private  CopyOnWriteArrayList<BulletObject> BulletList  = new CopyOnWriteArrayList<BulletObject>();
@@ -56,7 +57,7 @@ public class Model {
 	public Model() { 
 		//setup game world 
 		//Player 
-		Player= new GameObject("res/OMDirects.png",50,80,new Point3f(500,500,0));
+		Player= new PlayerObject("res/OMDirects.png",50,80,new Point3f(500,500,0));
 		
 		//Enemies  starting with four 
 		for (int i = 0; i < 4; i++) {
@@ -98,7 +99,7 @@ public class Model {
 
 
 		// this is a way to increment across the array list data structure 
-
+		
 
 		//maybe make quad tree later
 		//see if they hit anything 
@@ -167,11 +168,12 @@ public class Model {
 			temp.getCentre().ApplyVector( new Vector3f((float)(x * speedFactor), (float)(y * speedFactor),(float) 0.0));
 			
 			//adjusted shell for collision since player center is actually top left
+			//if player collides with enemy, health decreases
 			
 			if ( Math.abs(temp.getCentre().getX()- (Player.getCentre().getX()-20))< (temp.getWidth()-25) 
 					&& Math.abs(temp.getCentre().getY()- (Player.getCentre().getY()-20)) < (temp.getHeight()-20)) {
 				EnemiesList.remove(temp);
-				Score -= 20;
+				Player.health -= 5;
 			}
 			
 
@@ -369,7 +371,7 @@ public class Model {
 
 	}
 
-	public GameObject getPlayer() {
+	public PlayerObject getPlayer() {
 		return Player;
 	}
 

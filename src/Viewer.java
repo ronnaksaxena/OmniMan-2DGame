@@ -107,6 +107,21 @@ public class Viewer extends JPanel {
 		CurrentAnimationTime++; // runs animation time step 
 
 
+		
+		//Draw background 
+		drawBackground(g);
+		//Draw Health Status
+		//drawHealth(int x, int y, int width, int height, String borderTexture, String amtTexture,Graphics g)
+		drawHealth(30, 40, 200, 50, "res/healthBar.png", "res/healthAmt.png", g);
+
+		/*
+		 *  Want to draw bullets inbetween player and gun
+		 * 
+		 * 
+		 */
+		
+		
+		
 		//Player GameObject attributes 
 		int x = (int) gameworld.getPlayer().getCentre().getX();
 		int y = (int) gameworld.getPlayer().getCentre().getY();
@@ -120,16 +135,7 @@ public class Viewer extends JPanel {
 		double gunScaleX = (double) gameworld.getGun().getScaleX();
 		double gunScaleY = (double) gameworld.getGun().getScaleY();
 		String gunTexture = gameworld.getGun().getTexture();
-		double gunAngle = gameworld.getGun().getAngle();
-		//Draw background 
-		drawBackground(g);
-
-		/*
-		 *  Want to draw bullets inbetween player and gun
-		 * 
-		 * 
-		 */
-		
+				double gunAngle = gameworld.getGun().getAngle();
 		//Draws gun first if player is moving up
 		if (gameworld.getPlayer().getDirection() == 1) {
 			drawGun(gunX, gunY, gunScaleX, gunScaleY, gunTexture, gunAngle, g);
@@ -262,6 +268,50 @@ public class Viewer extends JPanel {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.drawImage(gunImg, at, null);
 
+
+	}
+	
+	//fn to draw health bar by amount of health player has
+	//NOT SCALABLE! DONT CHANGE!
+	private void drawHealth(int x, int y, int width, int height, String borderTexture, String amtTexture,Graphics g) { 
+		
+		File TextureToLoad = new File(amtTexture);  //should work okay on OSX and Linux but check if you have issues depending your eclipse install or if your running this without an IDE 
+		try {
+			Image amtImg  = ImageIO.read(TextureToLoad);
+			//The spirte is 32x32 pixel wide and 4 of them are placed together so we need to grab a different one each time 
+			//remember your training :-) computer science everything starts at 0 so 32 pixels gets us to 31
+			//HOW to speed up my character??
+			
+			int health = Math.min((int) gameworld.getPlayer().getHealth(), 0); //finds health
+			
+			//TOO MESSY
+			//findBorders for health bar
+			int x1 = x+40;
+			double healthPercent = ((double) health) / 100.0;
+			double amtWidth = (double)(width-45) * healthPercent + (double)x1;
+			
+			g.drawImage(amtImg, x1,y+10, (int)amtWidth, y+height-10, 0, 0, 100, 50, null); 
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
+		File secondLayer = new File(borderTexture);
+		try {
+			Image borderImg  = ImageIO.read(secondLayer);
+			//The spirte is 32x32 pixel wide and 4 of them are placed together so we need to grab a different one each time 
+			//remember your training :-) computer science everything starts at 0 so 32 pixels gets us to 31
+			//HOW to speed up my character??
+			
+			int health = (int) gameworld.getPlayer().getHealth(); //finds health
+			
+			g.drawImage(borderImg, x,y, x+width, y+height, 0, 0, 200, 54, null); 
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 
 	}
 

@@ -31,7 +31,6 @@ public class GameObject {
 	private boolean hasTextured=false;
 	private String textureLocation; 
 	private String blanktexture="res/blankSprite.png";
-	private int direction = 0; //0 == not moving, 1 == up, 2 == right, 3 == down, 4 == left
 
 	public GameObject() {  
 
@@ -81,12 +80,6 @@ public class GameObject {
 			blanktexture = newTexture;
 		}
 
-	}
-	public int getDirection() {
-		return direction;
-	}
-	public void setDirection(int x) {
-		direction = x;
 	}
 
 }
