@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -11,8 +12,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
-import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.event.MouseEvent;
@@ -175,12 +175,10 @@ public class Viewer extends JPanel {
 	}
 
 	private void drawEnemies(int x, int y, int width, int height, String texture, Graphics g) {
-		File TextureToLoad = new File(texture);  //should work okay on OSX and Linux but check if you have issues depending your eclipse install or if your running this without an IDE 
+		File TextureToLoad = new File(texture); 
 		try {
-			Image myImage = ImageIO.read(TextureToLoad);
-			//The spirte is 32x32 pixel wide and 4 of them are placed together so we need to grab a different one each time 
-			//remember your training :-) computer science everything starts at 0 so 32 pixels gets us to 31  
-			int currentPositionInAnimation= ((int)((CurrentAnimationTime%14)/2))*100; //slows down animation so every 10 frames we get another frame so every 100ms 
+			Image myImage = ImageIO.read(TextureToLoad); 
+			int currentPositionInAnimation= ((int)((CurrentAnimationTime%14)/2))*100; 
 			g.drawImage(myImage, x,y, x+width, y+height, currentPositionInAnimation  , 0, currentPositionInAnimation+99, 100, null); 
 
 		} catch (IOException e) {
@@ -220,9 +218,6 @@ public class Viewer extends JPanel {
 		File TextureToLoad = new File(texture);  //should work okay on OSX and Linux but check if you have issues depending your eclipse install or if your running this without an IDE 
 		try {
 			Image myImage = ImageIO.read(TextureToLoad);
-			//The spirte is 32x32 pixel wide and 4 of them are placed together so we need to grab a different one each time 
-			//remember your training :-) computer science everything starts at 0 so 32 pixels gets us to 31
-			//HOW to speed up my character??
 			
 			int currentDirection = (int) gameworld.getPlayer().getDirection(); //find direction
 			int yOffset = currentDirection * 24;
@@ -239,11 +234,7 @@ public class Viewer extends JPanel {
 			e.printStackTrace();
 		} 
 
-		//g.drawImage(img, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, observer));
-		//Lighnting Png from https://opengameart.org/content/animated-spaceships  its 32x32 thats why I know to increament by 32 each time 
-		// Bullets from https://opengameart.org/forumtopic/tatermands-art 
-		// background image from https://www.needpix.com/photo/download/677346/space-stars-nebula-background-galaxy-universe-free-pictures-free-photos-free-images
-
+		
 	}
 	
 	//function to return mirrored buffer image
@@ -275,14 +266,11 @@ public class Viewer extends JPanel {
 	//NOT SCALABLE! DONT CHANGE!
 	private void drawHealth(int x, int y, int width, int height, String borderTexture, String amtTexture,Graphics g) { 
 		
-		File TextureToLoad = new File(amtTexture);  //should work okay on OSX and Linux but check if you have issues depending your eclipse install or if your running this without an IDE 
+		File TextureToLoad = new File(amtTexture);  
 		try {
 			Image amtImg  = ImageIO.read(TextureToLoad);
-			//The spirte is 32x32 pixel wide and 4 of them are placed together so we need to grab a different one each time 
-			//remember your training :-) computer science everything starts at 0 so 32 pixels gets us to 31
-			//HOW to speed up my character??
 			
-			int health = Math.min((int) gameworld.getPlayer().getHealth(), 0); //finds health
+			int health = Math.max((int) gameworld.getPlayer().getHealth(), 0); //finds health
 			
 			//TOO MESSY
 			//findBorders for health bar
@@ -300,9 +288,6 @@ public class Viewer extends JPanel {
 		File secondLayer = new File(borderTexture);
 		try {
 			Image borderImg  = ImageIO.read(secondLayer);
-			//The spirte is 32x32 pixel wide and 4 of them are placed together so we need to grab a different one each time 
-			//remember your training :-) computer science everything starts at 0 so 32 pixels gets us to 31
-			//HOW to speed up my character??
 			
 			int health = (int) gameworld.getPlayer().getHealth(); //finds health
 			
@@ -312,7 +297,11 @@ public class Viewer extends JPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
-
+		
+		//Draws health label
+		g.setColor(Color.RED);
+		g.setFont(new Font("SansSerif", Font.PLAIN, 20));
+		g.drawString("Health: " + gameworld.getPlayer().getHealth(), 80, 38);
 	}
 
 
