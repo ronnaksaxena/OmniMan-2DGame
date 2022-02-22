@@ -48,21 +48,28 @@ public class Model {
 	
 	//game states
 	private int curClicks = 0;
-	public static boolean gameOver = false;
+	public static boolean gameLost = false;
 	public static boolean gameWon = false;
-	private int level = -1;
+	private int level = 2;
 	
 	//versions by level
 	//gun versions (level, gunType)
 	private HashMap<Integer, GunObject> gunType = new HashMap<Integer, GunObject>();
 	public void addGuns() {
 		gunType.put(1, new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+13, Player.getCentre().getY()+35,0), 0.25,  0.25, 0));
+		gunType.put(2, new GunObject("res/gun2", new Point3f(Player.getCentre().getX()+10, Player.getCentre().getY()+10,0), 0.2,  0.2, 0));
 	}
 	
 	//enemy versions by level
 	private HashMap<Integer, EnemyObject> enemyType = new HashMap<Integer, EnemyObject>();
 	public void addEnemies() { //CHANGE enemy spawns every time you make an enemy object
 		enemyType.put(1, new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(0,0,0), 0));
+		enemyType.put(2, new EnemyObject("res/covidCell2.png", 100, 100, new Point3f(0,0,0), 0));
+	}
+	private HashMap<Integer, CopyOnWriteArrayList<EnemyObject>> enemyLists = new HashMap<Integer, CopyOnWriteArrayList<EnemyObject>>();
+	public void addEnemyLists() {
+		enemyLists.put(1, new CopyOnWriteArrayList<EnemyObject>());
+		enemyLists.put(2, new CopyOnWriteArrayList<EnemyObject>());
 	}
 	
 	//bullet versions by level, just different textures
@@ -81,7 +88,7 @@ public class Model {
 	//game elements
 	private  PlayerObject Player;
 	private Controller controller = Controller.getInstance();
-	private  CopyOnWriteArrayList<EnemyObject> EnemiesList  = new CopyOnWriteArrayList<EnemyObject>();
+	private  CopyOnWriteArrayList<EnemyObject> EnemiesList;
 	private  CopyOnWriteArrayList<BulletObject> BulletList  = new CopyOnWriteArrayList<BulletObject>();
 	private boolean isTimerRunning = false;
 	private int Score=0;
@@ -92,26 +99,21 @@ public class Model {
 
 	public Model() { 
 		//setup game world 
+		
+		//Instantiate player first so other types get positions relative to player
+		Player= new PlayerObject("res/OMDirects.png",50,80,new Point3f(500,500,0));
 
 		//addTypes to HashMaps
+		addGuns();
+		addEnemies();
+		addEnemyLists();
+		addBullets();
 		addBackgrounds();
 		
-		//Player 
-		Player= new PlayerObject("res/OMDirects.png",50,80,new Point3f(500,500,0));
-		
-		//Enemies  starting with four 
-		for (int i = 0; i < 4; i++) {
-			// constructor: (String textureLocation,int width,int height,Point3f centre, double curAngle)
-			
-			EnemiesList.add(new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(((float)Math.random()*1000),0,0), 0));
-		}
-		
 		//gun
-		//gun offsets for position
-		int gX = 13;
-		int gY = 35;
 		//need to add Right.png or Left.png to texture
-		Gun = new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+gX, Player.getCentre().getY()+gY,0), 0.25,  0.25, 0);
+		Gun = gunType.get(level);
+		EnemiesList = enemyLists.get(level);
 
 		
 
@@ -231,7 +233,9 @@ public class Model {
 			{
 				float xSpawn = getXSpawn((double) Player.getCentre().getX(), 200.0);
 				float ySpawn = getYSpawn((double) Player.getCentre().getY(), 200.0);
-				EnemiesList.add(new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(xSpawn,ySpawn,0), 0)); 
+				EnemyObject newEnemy = enemyType.get(level);
+				newEnemy.setCentre(new Point3f(xSpawn, ySpawn, 0));
+				EnemiesList.add(newEnemy); 
 			}
 		}
 
@@ -394,8 +398,13 @@ public class Model {
 		
 	}
 	
-	//check if need to set the gameOver or gameEnd flag
+	//check if need to set the gameLost or gameWon flag
 	private void stateLogic() {
+		//make if statement to check for advance to next level
+		Gun = gunType.get(level);
+		EnemiesList = enemyLists.get(level);
+		//make if statement to check for gameLost
+		//make if statement to check for gameWon
 		
 	}
 

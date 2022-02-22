@@ -135,7 +135,9 @@ public class Viewer extends JPanel {
 		double gunScaleX = (double) gameworld.getGun().getScaleX();
 		double gunScaleY = (double) gameworld.getGun().getScaleY();
 		String gunTexture = gameworld.getGun().getTexture();
-				double gunAngle = gameworld.getGun().getAngle();
+		double gunAngle = gameworld.getGun().getAngle();
+		
+		
 		//Draws gun first if player is moving up
 		if (gameworld.getPlayer().getDirection() == 1) {
 			drawGun(gunX, gunY, gunScaleX, gunScaleY, gunTexture, gunAngle, g);

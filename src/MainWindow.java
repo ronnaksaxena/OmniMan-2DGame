@@ -143,7 +143,7 @@ public class MainWindow {
 
 		// Both these calls could be setup as  a thread but we want to simplify the game logic for you.  
 		//score update  
-		frame.setTitle("Score =  "+ gameworld.getScore()); 
+		frame.setTitle("Level: " + gameworld.getLevel() + " Score: " + gameworld.getScore()); 
 
 
 	}
