@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -43,19 +45,57 @@ SOFTWARE.
    (MIT LICENSE ) e.g do what you want with this :-) 
  */ 
 public class Model {
-
+	
+	//game states
+	private int curClicks = 0;
+	public static boolean gameOver = false;
+	public static boolean gameWon = false;
+	private int level = -1;
+	
+	//versions by level
+	//gun versions (level, gunType)
+	private HashMap<Integer, GunObject> gunType = new HashMap<Integer, GunObject>();
+	public void addGuns() {
+		gunType.put(1, new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+13, Player.getCentre().getY()+35,0), 0.25,  0.25, 0));
+	}
+	
+	//enemy versions by level
+	private HashMap<Integer, EnemyObject> enemyType = new HashMap<Integer, EnemyObject>();
+	public void addEnemies() { //CHANGE enemy spawns every time you make an enemy object
+		enemyType.put(1, new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(0,0,0), 0));
+	}
+	
+	//bullet versions by level, just different textures
+	private HashMap<Integer, String> bulletType = new HashMap<Integer, String>();
+	public void addBullets() {
+		bulletType.put(1, "res/bullet1.png");
+	}
+	
+	//switch map per level
+	private HashMap<Integer, String> backgroundType = new HashMap<Integer, String>();
+	public void addBackgrounds() {
+	}
+	
+	
+	
+	//game elements
 	private  PlayerObject Player;
 	private Controller controller = Controller.getInstance();
 	private  CopyOnWriteArrayList<EnemyObject> EnemiesList  = new CopyOnWriteArrayList<EnemyObject>();
 	private  CopyOnWriteArrayList<BulletObject> BulletList  = new CopyOnWriteArrayList<BulletObject>();
 	private boolean isTimerRunning = false;
 	private int Score=0;
-	private GunObject Gun1;
-	private int curClicks = 0;
+	private GunObject Gun;
+	
+	
 	
 
 	public Model() { 
 		//setup game world 
+
+		//addTypes to HashMaps
+		addBackgrounds();
+		
 		//Player 
 		Player= new PlayerObject("res/OMDirects.png",50,80,new Point3f(500,500,0));
 		
@@ -71,9 +111,9 @@ public class Model {
 		int gX = 13;
 		int gY = 35;
 		//need to add Right.png or Left.png to texture
-		Gun1 = new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+gX, Player.getCentre().getY()+gY,0), 0.25,  0.25, 0);
+		Gun = new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+gX, Player.getCentre().getY()+gY,0), 0.25,  0.25, 0);
 
-
+		
 
 	}
 
@@ -81,7 +121,9 @@ public class Model {
 	// This is the heart of the game , where the model takes in all the inputs ,decides the outcomes and then changes the model accordingly. 
 	public void gamelogic() 
 	{
-		// Player Logic first 
+		//Rotates Gun
+		gunLogic();
+		// Player Logic
 		playerLogic(); 
 		// Enemy Logic next
 		enemyLogic();
@@ -89,8 +131,10 @@ public class Model {
 		bulletLogic();
 		// interactions between objects 
 		gameLogic();
-		//Rotates Gun
-		gunLogic();
+		// checks if game state should change
+		stateLogic();
+		
+		
 
 	}
 
@@ -248,7 +292,7 @@ public class Model {
 		//check for movement and if you fired a bullet
 		
 		//BULLET CONTROLS
-		//Timer to fire bullet every 2 seconds
+		//Timer to fire bullet every 3 seconds
 		
 		Timer t = new Timer(300 , new ActionListener() {
 
@@ -283,7 +327,7 @@ public class Model {
 			//checking for OOB
 			if (Player.getCentre().getX() > 0) {
 				Player.getCentre().ApplyVector( new Vector3f(-2,0,0));
-				Gun1.getCentre().ApplyVector( new Vector3f(-2,0,0));
+				Gun.getCentre().ApplyVector( new Vector3f(-2,0,0));
 			}
 			
 		}
@@ -292,7 +336,7 @@ public class Model {
 			Player.setDirection(2);
 			if (Player.getCentre().getX() < 900) {
 				Player.getCentre().ApplyVector( new Vector3f(2,0,0));
-				Gun1.getCentre().ApplyVector( new Vector3f(2,0,0));
+				Gun.getCentre().ApplyVector( new Vector3f(2,0,0));
 			}
 			
 		}
@@ -301,7 +345,7 @@ public class Model {
 			Player.setDirection(1);
 			if (Player.getCentre().getY() > 0) {
 				Player.getCentre().ApplyVector( new Vector3f(0,2,0));
-				Gun1.getCentre().ApplyVector( new Vector3f(0,2,0));
+				Gun.getCentre().ApplyVector( new Vector3f(0,2,0));
 				}
 			
 		}
@@ -309,7 +353,7 @@ public class Model {
 			Player.setDirection(3);
 			if (Player.getCentre().getY() < 700) {
 				Player.getCentre().ApplyVector( new Vector3f(0,-2,0));
-				Gun1.getCentre().ApplyVector( new Vector3f(0,-2,0));
+				Gun.getCentre().ApplyVector( new Vector3f(0,-2,0));
 			}
 			
 		}
@@ -338,23 +382,28 @@ public class Model {
 	//To rotate gun to follow mouse
 	private void gunLogic() {
 		//find angle between gun and mouse
-		double gunX = (double)Gun1.getCentre().getX();
-		double gunY = (double)Gun1.getCentre().getY();
+		double gunX = (double)Gun.getCentre().getX();
+		double gunY = (double)Gun.getCentre().getY();
 		double mouseX = (double)controller.getMouseX();
 		double mouseY = (double)controller.getMouseY();
 		
 		//have to switch position of mouseY and gunY since Y decreases when you move up
 		double theta = calculateAngle(gunX, mouseY, mouseX, gunY);
 		
-		Gun1.setAngle(theta);
+		Gun.setAngle(theta);
+		
+	}
+	
+	//check if need to set the gameOver or gameEnd flag
+	private void stateLogic() {
 		
 	}
 
 	private void CreateBullet() {
 		//trying to find bullet angle
 		//find angle between bullet and mouse
-		double gunX = (double)Gun1.getCentre().getX();
-		double gunY = (double)Gun1.getCentre().getY();
+		double gunX = (double)Gun.getCentre().getX();
+		double gunY = (double)Gun.getCentre().getY();
 		double mouseX = (double)controller.getMouseX();
 		double mouseY = (double)controller.getMouseY();
 		
@@ -388,15 +437,23 @@ public class Model {
 	}
 	
 	public GunObject getGun() {
-		return Gun1;
+		return Gun;
 	}
 	
 	public Controller getController() {
 		return Controller.getInstance();
 	}
+	
+	public int getLevel() {
+		return this.level;
+	}
+	
+	public void setLevel(int x) {
+		this.level = x;
+	}
 
 
-}
+};
 
 
 /* MODEL OF your GAME world 

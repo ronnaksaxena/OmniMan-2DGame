@@ -5,6 +5,7 @@ public class GunObject extends GameObject{
 	public static double angle = 0.0;
 	public static double scaleX = 0.0;
 	public static double scaleY = 0.0;
+	public static int fireRate = 100;
 	
 	public GunObject (String textureLocation, Point3f centre, double scaleX, double scaleY, double angle) {
 		super(textureLocation,50,50,centre);
