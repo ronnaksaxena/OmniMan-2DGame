@@ -103,7 +103,7 @@ public class MainWindow {
 		frame.setVisible(true);   
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws CloneNotSupportedException {
 		MainWindow hello = new MainWindow();  //sets up environment 
 		while(true)   //not nice but remember we do just want to keep looping till the end.  // this could be replaced by a thread but again we want to keep things simple 
 		{ 
@@ -129,7 +129,7 @@ public class MainWindow {
 
 	} 
 	//Basic Model-View-Controller pattern 
-	private static void gameloop() { 
+	private static void gameloop() throws CloneNotSupportedException { 
 		// GAMELOOP  
 
 		// controller input  will happen on its own thread 

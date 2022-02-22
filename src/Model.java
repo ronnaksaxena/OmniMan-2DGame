@@ -121,7 +121,7 @@ public class Model {
 
 	// calls all logics here
 	// This is the heart of the game , where the model takes in all the inputs ,decides the outcomes and then changes the model accordingly. 
-	public void gamelogic() 
+	public void gamelogic() throws CloneNotSupportedException 
 	{
 		//Rotates Gun
 		gunLogic();
@@ -192,7 +192,7 @@ public class Model {
 
     
 
-	private void enemyLogic() {
+	private void enemyLogic() throws CloneNotSupportedException {
 		// TODO Auto-generated method stub
 		for (EnemyObject temp : EnemiesList) 
 		{
@@ -233,7 +233,8 @@ public class Model {
 			{
 				float xSpawn = getXSpawn((double) Player.getCentre().getX(), 200.0);
 				float ySpawn = getYSpawn((double) Player.getCentre().getY(), 200.0);
-				EnemyObject newEnemy = enemyType.get(level);
+				EnemyObject curType = enemyType.get(level);
+				EnemyObject newEnemy = (EnemyObject)curType.clone();
 				newEnemy.setCentre(new Point3f(xSpawn, ySpawn, 0));
 				EnemiesList.add(newEnemy); 
 			}

@@ -1,6 +1,6 @@
 package util;
 
-public class EnemyObject extends GameObject {
+public class EnemyObject extends GameObject implements Cloneable {
 	//direction the enemy is moving towards or away
 	public double curAngle = 0.0;
 	public double speed = 1.0;
@@ -19,6 +19,10 @@ public class EnemyObject extends GameObject {
 	public double getcurAngle() {
 		return this.curAngle;
 	}
+	public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
+    }
 	
 }
 
