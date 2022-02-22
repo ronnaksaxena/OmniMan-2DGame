@@ -47,21 +47,25 @@ SOFTWARE.
 public class Model {
 	
 	//game states
+	private boolean isTimerRunning = false;
+	private int Score=0;
 	private int curClicks = 0;
 	public static boolean gameLost = false;
 	public static boolean gameWon = false;
-	private int level = 2;
+	private int level = 1;
 	
 	//versions by level
 	//gun versions (level, gunType)
 	private HashMap<Integer, GunObject> gunType = new HashMap<Integer, GunObject>();
 	public void addGuns() {
-		gunType.put(1, new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+13, Player.getCentre().getY()+35,0), 0.25,  0.25, 0));
-		gunType.put(2, new GunObject("res/gun2", new Point3f(Player.getCentre().getX()+10, Player.getCentre().getY()+10,0), 0.2,  0.2, 0));
+		gunType.put(1, new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+30,0), 0.3,  0.3, (double)0, (double)1.0));
+		gunType.put(2, new GunObject("res/gun2", new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+25,0), 0.3,  0.3, (double)0, (double)1.0));
 	}
 	
 	//enemy versions by level
 	private HashMap<Integer, EnemyObject> enemyType = new HashMap<Integer, EnemyObject>();
+	
+	//These are blueprints so you have to make a copy to original enemy blueprint each instantiation
 	public void addEnemies() { //CHANGE enemy spawns every time you make an enemy object
 		enemyType.put(1, new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(0,0,0), 0));
 		enemyType.put(2, new EnemyObject("res/covidCell2.png", 100, 100, new Point3f(0,0,0), 0));
@@ -72,10 +76,18 @@ public class Model {
 		enemyLists.put(2, new CopyOnWriteArrayList<EnemyObject>());
 	}
 	
-	//bullet versions by level, just different textures
-	private HashMap<Integer, String> bulletType = new HashMap<Integer, String>();
+	//bullet versions by level, set the angle after instantiation
+	private HashMap<Integer, BulletObject> bulletType = new HashMap<Integer, BulletObject>();
 	public void addBullets() {
-		bulletType.put(1, "res/bullet1.png");
+		bulletType.put(0, new BulletObject("res/bullet0.png", new Point3f(Player.getCentre().getX()+10,Player.getCentre().getY()+25,0.0f), 1.0, 1.0, 0));
+		bulletType.put(1, new BulletObject("res/bullet1.png", new Point3f(Player.getCentre().getX()+10,Player.getCentre().getY()+25,0.0f), 1.0, 1.0, 0));
+		bulletType.put(2, new BulletObject("res/bullet2.png", new Point3f(Player.getCentre().getX()+10,Player.getCentre().getY()+25,0.0f), 0.5, 0.5, 0));
+	}
+	private HashMap<Integer, CopyOnWriteArrayList<BulletObject>> bulletLists = new HashMap<Integer, CopyOnWriteArrayList<BulletObject>>();
+	public void addBulletLists() {
+		bulletLists.put(0, new CopyOnWriteArrayList<BulletObject>());
+		bulletLists.put(1, new CopyOnWriteArrayList<BulletObject>());
+		bulletLists.put(2, new CopyOnWriteArrayList<BulletObject>());
 	}
 	
 	//switch map per level
@@ -86,13 +98,11 @@ public class Model {
 	
 	
 	//game elements
-	private  PlayerObject Player;
+	private  static PlayerObject Player;
 	private Controller controller = Controller.getInstance();
 	private  CopyOnWriteArrayList<EnemyObject> EnemiesList;
-	private  CopyOnWriteArrayList<BulletObject> BulletList  = new CopyOnWriteArrayList<BulletObject>();
-	private boolean isTimerRunning = false;
-	private int Score=0;
-	private GunObject Gun;
+	private  CopyOnWriteArrayList<BulletObject> BulletList;
+	private static GunObject Gun;
 	
 	
 	
@@ -108,12 +118,14 @@ public class Model {
 		addEnemies();
 		addEnemyLists();
 		addBullets();
+		addBulletLists();
 		addBackgrounds();
 		
 		//gun
 		//need to add Right.png or Left.png to texture
 		Gun = gunType.get(level);
 		EnemiesList = enemyLists.get(level);
+		BulletList = bulletLists.get(level);
 
 		
 
@@ -231,10 +243,13 @@ public class Model {
 		{
 			while (EnemiesList.size()<5)
 			{
-				float xSpawn = getXSpawn((double) Player.getCentre().getX(), 200.0);
-				float ySpawn = getYSpawn((double) Player.getCentre().getY(), 200.0);
+				//need to add a copy of enemy type blueprint to corresponding enemyList
 				EnemyObject curType = enemyType.get(level);
 				EnemyObject newEnemy = (EnemyObject)curType.clone();
+				
+				//give it a random spawn 200 pts away from player
+				float xSpawn = getXSpawn((double) Player.getCentre().getX(), 200.0);
+				float ySpawn = getYSpawn((double) Player.getCentre().getY(), 200.0);
 				newEnemy.setCentre(new Point3f(xSpawn, ySpawn, 0));
 				EnemiesList.add(newEnemy); 
 			}
@@ -265,7 +280,7 @@ public class Model {
 	private void bulletLogic() {
 		// move bullets 
 		//multiple to change speed of bullet
-		double speedFactor = 2;
+		double speedFactor = 4;
 
 		for (BulletObject temp : BulletList) 
 		{
@@ -290,7 +305,7 @@ public class Model {
 
 	}
 
-	private void playerLogic() {
+	private void playerLogic() throws CloneNotSupportedException {
 
 		// smoother animation is possible if we make a target position  // done but may try to change things for students  
 
@@ -304,7 +319,12 @@ public class Model {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (isTimerRunning) {
-					CreateBullet();
+					try {
+						CreateBullet();
+					} catch (CloneNotSupportedException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
 			}
 		});
@@ -404,12 +424,13 @@ public class Model {
 		//make if statement to check for advance to next level
 		Gun = gunType.get(level);
 		EnemiesList = enemyLists.get(level);
+		BulletList = bulletLists.get(level);
 		//make if statement to check for gameLost
 		//make if statement to check for gameWon
 		
 	}
 
-	private void CreateBullet() {
+	private void CreateBullet() throws CloneNotSupportedException {
 		//trying to find bullet angle
 		//find angle between bullet and mouse
 		double gunX = (double)Gun.getCentre().getX();
@@ -422,12 +443,27 @@ public class Model {
 		//since bullets start pointed to right
 		theta -= 90;
 		
+		//created a copy of bullet blueprint
+		BulletObject curType = bulletType.get(level);
+		BulletObject newBullet = (BulletObject)curType.clone();
+		newBullet.setAngle(theta);
+		//offsets to make it look better
+		int dx = 0; 
+		int dy = 0;
+		if (level == 0 || level == 1) {
+			dx = 10;
+			dy = 25;
+		}
+		else if (level == 2) {
+			dx = -25;
+			dy = 0;
+		}
 		
-		int dX = 10; //X offset
-		int dY = 25; //Y offset
+		newBullet.changeCentre(Player.getCentre().getX()+dx,Player.getCentre().getY()+dy,0.0f);
+		BulletList.add(newBullet);
 		
-		BulletList.add(new BulletObject("res/bullet1.png", new Point3f(Player.getCentre().getX()+dX,Player.getCentre().getY()+dY,0.0f), 1.0, 1.0, theta));
-
+		
+		
 	}
 
 	public PlayerObject getPlayer() {

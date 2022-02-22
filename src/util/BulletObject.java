@@ -1,14 +1,14 @@
 package util;
 
-public class BulletObject extends GameObject {
-	public double angle = 0.0;
-	public static double scaleX = 0.0;
-	public static double scaleY = 0.0;
+public class BulletObject extends GameObject implements Cloneable {
+	private double  angle = 0.0;
+	private double scaleX = 0.0; //change back to static
+	private double scaleY = 0.0;
 	
 	public BulletObject (String textureLocation, Point3f centre, double scaleX, double scaleY, double angle) {
 		super(textureLocation,50,50,centre);
-		BulletObject.scaleX = scaleX;
-		BulletObject.scaleY = scaleY;
+		this.scaleX = scaleX;
+		this.scaleY = scaleY;
 		this.angle = angle;
 	}
 	
@@ -27,4 +27,9 @@ public class BulletObject extends GameObject {
 	public double getAngle() {
 		return this.angle;
 	}
+	
+	public Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
+    }
 }

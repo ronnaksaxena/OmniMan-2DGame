@@ -2,32 +2,38 @@ package util;
 
 public class GunObject extends GameObject{
 	
-	public static double angle = 0.0;
-	public static double scaleX = 0.0;
-	public static double scaleY = 0.0;
-	public static int fireRate = 100;
 	
-	public GunObject (String textureLocation, Point3f centre, double scaleX, double scaleY, double angle) {
+	private double scaleX = 0.0;
+	private double scaleY = 0.0;
+	private double angle = 0.0;
+	private double speed;
+	
+	public GunObject (String textureLocation, Point3f centre, double sX, double sY, double angle, double velocity) {
 		super(textureLocation,50,50,centre);
-		GunObject.scaleX = scaleX;
-		GunObject.scaleY = scaleY;
-		GunObject.angle = angle;
+		this.scaleX = sX;
+		this.scaleY = sY;
+		this.angle = angle;
+		speed = velocity;
 	}
 	
 	public void setAngle(double newAngle) {
-		GunObject.angle = newAngle;
+		this.angle = newAngle;
 	}
 	
 	public double getScaleX() {
-		return GunObject.scaleX;
+		return scaleX;
 	}
 	
 	public double getScaleY() {
-		return GunObject.scaleY;
+		return scaleY;
 	}
 	
 	public double getAngle() {
-		return GunObject.angle;
+		return this.angle;
+	}
+	
+	public double getSpeed() {
+		return this.speed;
 	}
 	
 
