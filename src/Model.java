@@ -72,7 +72,7 @@ public class Model {
 		gunType.put(0, new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+30,0), 0.3,  0.3, (double)0, (double)1.0));
 		gunType.put(1, new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+30,0), 0.3,  0.3, (double)0, (double)1.0));
 		gunType.put(2, new GunObject("res/gun2", new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+25,0), 0.3,  0.3, (double)0, (double)1.0));
-		gunType.put(3, new GunObject("res/gun3", new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+25,0), 0.2,  0.2, (double)0, (double)1.0));
+		gunType.put(3, new GunObject("res/gun3", new Point3f(Player.getCentre().getX()+10, Player.getCentre().getY(),0), 0.2,  0.2, (double)0, (double)1.0));
 	}
 	
 	//enemy versions by level
@@ -82,9 +82,9 @@ public class Model {
 	public void addEnemies() { //CHANGE enemy spawns every time you make an enemy object
 		//EnemyObject (String textureLocation,int width,int height,Point3f centre, double curAngle, double sp, int dmg)
 		enemyType.put(0, new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(0,0,0), 0, 0.25, 1));
-		enemyType.put(1, new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(0,0,0), 0, 0.5, 5));
+		enemyType.put(1, new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(0,0,0), 0, 0.75, 5));
 		enemyType.put(2, new EnemyObject("res/covidCell2.png", 100, 100, new Point3f(0,0,0), 0, 1.25, 10));
-		enemyType.put(3, new EnemyObject("res/covidCell3.png", 100, 100, new Point3f(0,0,0), 0, 2, 20));
+		enemyType.put(3, new EnemyObject("res/covidCell3.png", 100, 100, new Point3f(0,0,0), 0, 2.25, 20));
 	}
 	private HashMap<Integer, CopyOnWriteArrayList<EnemyObject>> enemyLists = new HashMap<Integer, CopyOnWriteArrayList<EnemyObject>>();
 	public void addEnemyLists() {
@@ -119,7 +119,7 @@ public class Model {
 		backgroundType.put(3, "res/background4.png");
 	}
 	
-	//Score multiplier, how many points you get per kill
+	//Score multiplier, how many points you get per kill (level, scoreMult)
 	private HashMap<Integer, Integer> scoreMult = new HashMap<Integer, Integer>();
 	public void addScoreMults() {
 		scoreMult.put(0, 1);
@@ -330,7 +330,7 @@ public class Model {
 				EnemyObject newEnemy = (EnemyObject)curType.clone();
 				
 				//give it a random spawn 200 pts away from player if level < 3, 300 pts away for level 3
-				double distanceFromPlayer = (level < 3) ? 200.0 : 300.0;
+				double distanceFromPlayer = (level < 3) ? 200.0 : 250.0;
 				float xSpawn = getXSpawn((double) Player.getCentre().getX(), distanceFromPlayer);
 				float ySpawn = getYSpawn((double) Player.getCentre().getY(), distanceFromPlayer);
 				newEnemy.setCentre(new Point3f(xSpawn, ySpawn, 0));
@@ -517,7 +517,7 @@ public class Model {
 	//check if need to set the gameLost or gameWon flag
 	private void stateLogic() {
 		//make if statement to check for advance to next level
-		if (Score >= 15 && Score < 100) {
+		if (Score >= 15 && Score < 150) {
 			level = 1;
 			EnemiesList = enemyLists.get(level);
 			BulletList = bulletLists.get(level);
@@ -527,7 +527,7 @@ public class Model {
 			}
 			
 		}
-		if (Score >= 100 && Score < 300) {
+		if (Score >= 150 && Score < 500) {
 			level = 2;
 			Gun = gunType.get(level);
 			//adjust gun2 position
@@ -539,7 +539,7 @@ public class Model {
 				revives = 1;
 			}
 		}
-		if (Score >= 300) {
+		if (Score >= 500) {
 			level = 3;
 			Gun = gunType.get(level);
 			//adjust gun2 position
@@ -552,7 +552,7 @@ public class Model {
 			}
 		}
 		//checks if won game
-		if (Score >= 1000) {
+		if (Score >= 2000) {
 			gameWon = true;
 		}
 		
@@ -628,10 +628,23 @@ public class Model {
 	//function to reset game
 	public void resetGame() {
 		gameLost = false;
+		gameWon = false;
 		Score = 0;
 		Player.setHealth(100);
+		Player.setCentre(new Point3f(500, 500, 0));
 		level = 0;
-		gameWon = false;
+		//addTypes to HashMaps
+		addGuns();
+		addEnemies();
+		addEnemyLists();
+		addBullets();
+		addBulletLists();
+		addBackgrounds();
+		addScoreMults();
+		
+		EnemiesList = enemyLists.get(level);
+		BulletList = bulletLists.get(level);
+		Gun = gunType.get(level);
 		
 		
 	}
