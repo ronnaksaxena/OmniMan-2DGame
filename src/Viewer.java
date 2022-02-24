@@ -109,10 +109,23 @@ public class Viewer extends JPanel {
 		//3 possible states; gameRunning, gameLost, gameWon
 		if (gameworld.isGameLost()) {
 			drawGameOver(gameworld, g);
+			if(Controller.getInstance().isKeySpacePressed())
+			{
+				
+				
+				Controller.getInstance().setKeySpacePressed(false);
+				gameworld.resetGame();
+			}
 			
 		}
 		else if (gameworld.isGameWon()) {
 			drawGameWon(gameworld, g);
+			if(Controller.getInstance().isKeySpacePressed())
+			{
+				
+				Controller.getInstance().setKeySpacePressed(false);
+				gameworld.resetGame();
+			}
 		}
 		//draws components normally
 		else {
@@ -227,6 +240,8 @@ public class Viewer extends JPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+			
 	}
 	
 	private void drawGameWon(Model gameworld, Graphics g)

@@ -631,6 +631,7 @@ public class Model {
 		Score = 0;
 		Player.setHealth(100);
 		level = 0;
+		gameWon = false;
 		
 		
 	}
