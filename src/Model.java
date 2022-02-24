@@ -63,7 +63,7 @@ public class Model {
 	public boolean gameLost = false;
 	public boolean gameWon = false;
 	private int level = 0;
-	private int revives = 3; //number of health resets
+	private int revives = 0; //number of health resets
 	
 	//versions by level
 	//gun versions (level, gunType)
@@ -521,9 +521,9 @@ public class Model {
 			level = 1;
 			EnemiesList = enemyLists.get(level);
 			BulletList = bulletLists.get(level);
-			if (revives == 3) {
+			if (revives%3 == 0) {
 				Player.setHealth(100);
-				revives = 2;
+				revives += 1;
 			}
 			
 		}
@@ -534,25 +534,25 @@ public class Model {
 			Gun.setCentre(new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+25,0));
 			EnemiesList = enemyLists.get(level);
 			BulletList = bulletLists.get(level);
-			if (revives == 2) {
+			if (revives%3 == 1) {
 				Player.setHealth(100);
-				revives = 1;
+				revives += 1;
 			}
 		}
-		if (Score >= 500) {
+		if (Score >= 1000) {
 			level = 3;
 			Gun = gunType.get(level);
 			//adjust gun2 position
 			Gun.setCentre(new Point3f(Player.getCentre().getX()+10, Player.getCentre().getY(),0));
 			EnemiesList = enemyLists.get(level);
 			BulletList = bulletLists.get(level);
-			if (revives == 1) {
+			if (revives%3 == 2) {
 				Player.setHealth(100);
-				revives = 0;
+				revives += 1;
 			}
 		}
 		//checks if won game
-		if (Score >= 2000) {
+		if (Score >= 3000) {
 			gameWon = true;
 		}
 		
@@ -633,6 +633,7 @@ public class Model {
 		Player.setHealth(100);
 		Player.setCentre(new Point3f(500, 500, 0));
 		level = 0;
+		revives = 0;
 		//addTypes to HashMaps
 		addGuns();
 		addEnemies();
