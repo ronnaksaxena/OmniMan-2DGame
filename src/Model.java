@@ -14,10 +14,20 @@ import util.EnemyObject;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Timer;
 import java.lang.Math.*; //Math.PI Math.sin(double radians) Math.cos(double radians) all of type double
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Random;
 
 /*
@@ -50,16 +60,19 @@ public class Model {
 	private boolean isTimerRunning = false;
 	private int Score=0;
 	private int curClicks = 0;
-	public static boolean gameLost = false;
-	public static boolean gameWon = false;
-	private int level = 1;
+	public boolean gameLost = false;
+	public boolean gameWon = false;
+	private int level = 0;
+	private int revives = 3; //number of health resets
 	
 	//versions by level
 	//gun versions (level, gunType)
 	private HashMap<Integer, GunObject> gunType = new HashMap<Integer, GunObject>();
 	public void addGuns() {
+		gunType.put(0, new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+30,0), 0.3,  0.3, (double)0, (double)1.0));
 		gunType.put(1, new GunObject("res/gun1", new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+30,0), 0.3,  0.3, (double)0, (double)1.0));
 		gunType.put(2, new GunObject("res/gun2", new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+25,0), 0.3,  0.3, (double)0, (double)1.0));
+		gunType.put(3, new GunObject("res/gun3", new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+25,0), 0.2,  0.2, (double)0, (double)1.0));
 	}
 	
 	//enemy versions by level
@@ -67,13 +80,18 @@ public class Model {
 	
 	//These are blueprints so you have to make a copy to original enemy blueprint each instantiation
 	public void addEnemies() { //CHANGE enemy spawns every time you make an enemy object
-		enemyType.put(1, new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(0,0,0), 0));
-		enemyType.put(2, new EnemyObject("res/covidCell2.png", 100, 100, new Point3f(0,0,0), 0));
+		//EnemyObject (String textureLocation,int width,int height,Point3f centre, double curAngle, double sp, int dmg)
+		enemyType.put(0, new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(0,0,0), 0, 0.25, 1));
+		enemyType.put(1, new EnemyObject("res/covidCell1.png", 100, 100, new Point3f(0,0,0), 0, 0.5, 5));
+		enemyType.put(2, new EnemyObject("res/covidCell2.png", 100, 100, new Point3f(0,0,0), 0, 1.25, 10));
+		enemyType.put(3, new EnemyObject("res/covidCell3.png", 100, 100, new Point3f(0,0,0), 0, 2, 20));
 	}
 	private HashMap<Integer, CopyOnWriteArrayList<EnemyObject>> enemyLists = new HashMap<Integer, CopyOnWriteArrayList<EnemyObject>>();
 	public void addEnemyLists() {
+		enemyLists.put(0, new CopyOnWriteArrayList<EnemyObject>());
 		enemyLists.put(1, new CopyOnWriteArrayList<EnemyObject>());
 		enemyLists.put(2, new CopyOnWriteArrayList<EnemyObject>());
+		enemyLists.put(3, new CopyOnWriteArrayList<EnemyObject>());
 	}
 	
 	//bullet versions by level, set the angle after instantiation
@@ -82,17 +100,32 @@ public class Model {
 		bulletType.put(0, new BulletObject("res/bullet0.png", new Point3f(Player.getCentre().getX()+10,Player.getCentre().getY()+25,0.0f), 1.0, 1.0, 0));
 		bulletType.put(1, new BulletObject("res/bullet1.png", new Point3f(Player.getCentre().getX()+10,Player.getCentre().getY()+25,0.0f), 1.0, 1.0, 0));
 		bulletType.put(2, new BulletObject("res/bullet2.png", new Point3f(Player.getCentre().getX()+10,Player.getCentre().getY()+25,0.0f), 0.5, 0.5, 0));
+		bulletType.put(3, new BulletObject("res/bullet3.png", new Point3f(Player.getCentre().getX()+10,Player.getCentre().getY()+25,0.0f), 0.5, 0.5, 0));
 	}
 	private HashMap<Integer, CopyOnWriteArrayList<BulletObject>> bulletLists = new HashMap<Integer, CopyOnWriteArrayList<BulletObject>>();
 	public void addBulletLists() {
 		bulletLists.put(0, new CopyOnWriteArrayList<BulletObject>());
 		bulletLists.put(1, new CopyOnWriteArrayList<BulletObject>());
 		bulletLists.put(2, new CopyOnWriteArrayList<BulletObject>());
+		bulletLists.put(3, new CopyOnWriteArrayList<BulletObject>());
 	}
 	
 	//switch map per level
 	private HashMap<Integer, String> backgroundType = new HashMap<Integer, String>();
 	public void addBackgrounds() {
+		backgroundType.put(0, "res/background1.png");
+		backgroundType.put(1, "res/background2.png");
+		backgroundType.put(2, "res/background3.png");
+		backgroundType.put(3, "res/background4.png");
+	}
+	
+	//Score multiplier, how many points you get per kill
+	private HashMap<Integer, Integer> scoreMult = new HashMap<Integer, Integer>();
+	public void addScoreMults() {
+		scoreMult.put(0, 1);
+		scoreMult.put(1, 5);
+		scoreMult.put(2, 10);
+		scoreMult.put(3, 25);
 	}
 	
 	
@@ -120,6 +153,7 @@ public class Model {
 		addBullets();
 		addBulletLists();
 		addBackgrounds();
+		addScoreMults();
 		
 		//gun
 		//need to add Right.png or Left.png to texture
@@ -135,16 +169,20 @@ public class Model {
 	// This is the heart of the game , where the model takes in all the inputs ,decides the outcomes and then changes the model accordingly. 
 	public void gamelogic() throws CloneNotSupportedException 
 	{
-		//Rotates Gun
-		gunLogic();
-		// Player Logic
-		playerLogic(); 
-		// Enemy Logic next
-		enemyLogic();
-		// Bullets move next 
-		bulletLogic();
-		// interactions between objects 
-		gameLogic();
+		//only runs if game is in session
+		if (!gameLost && !gameWon) {
+			//Rotates Gun
+			gunLogic();
+			// Player Logic
+			playerLogic(); 
+			// Enemy Logic next
+			enemyLogic();
+			// Bullets move next 
+			bulletLogic();
+			// interactions between objects 
+			gameLogic();
+		}
+		
 		// checks if game state should change
 		stateLogic();
 		
@@ -171,7 +209,27 @@ public class Model {
 				{
 					EnemiesList.remove(temp);
 					BulletList.remove(Bullet);
-					Score+= 5;
+					Score += scoreMult.get(level);
+					
+					//plays gun sound every time enemy is killed
+					
+					String soundName = "res/laserSound.wav";    
+					AudioInputStream audioInputStream;
+					try {
+						audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
+						Clip clip = AudioSystem.getClip();
+						clip.open(audioInputStream);
+						clip.start();
+					} catch (UnsupportedAudioFileException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (LineUnavailableException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}  
 			}
 		}
@@ -220,7 +278,7 @@ public class Model {
 			double theta = calculateAngle(eX, pY, pX, eY);
 			
 			//finds next position to move enemy
-			double speedFactor = 0.75;
+			double speedFactor = temp.getSpeed();
 			double y = nextXPosition(theta); //swapped x and y for enemies? Works somehow!!
 			double x = nextYPosition(theta); 
 			temp.getCentre().ApplyVector( new Vector3f((float)(x * speedFactor), (float)(y * speedFactor),(float) 0.0));
@@ -231,7 +289,31 @@ public class Model {
 			if ( Math.abs(temp.getCentre().getX()- (Player.getCentre().getX()-20))< (temp.getWidth()-25) 
 					&& Math.abs(temp.getCentre().getY()- (Player.getCentre().getY()-20)) < (temp.getHeight()-20)) {
 				EnemiesList.remove(temp);
-				Player.health -= 5;
+				Player.health -= temp.getDamage();
+				
+				//plays sound everytime player is hit
+				
+				String soundName = "res/grunt.wav";    
+				AudioInputStream audioInputStream;
+				try {
+					audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
+					Clip clip = AudioSystem.getClip();
+					clip.open(audioInputStream);
+					clip.start();
+				} catch (UnsupportedAudioFileException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (LineUnavailableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+
+				
 			}
 			
 
@@ -247,9 +329,10 @@ public class Model {
 				EnemyObject curType = enemyType.get(level);
 				EnemyObject newEnemy = (EnemyObject)curType.clone();
 				
-				//give it a random spawn 200 pts away from player
-				float xSpawn = getXSpawn((double) Player.getCentre().getX(), 200.0);
-				float ySpawn = getYSpawn((double) Player.getCentre().getY(), 200.0);
+				//give it a random spawn 200 pts away from player if level < 3, 300 pts away for level 3
+				double distanceFromPlayer = (level < 3) ? 200.0 : 300.0;
+				float xSpawn = getXSpawn((double) Player.getCentre().getX(), distanceFromPlayer);
+				float ySpawn = getYSpawn((double) Player.getCentre().getY(), distanceFromPlayer);
 				newEnemy.setCentre(new Point3f(xSpawn, ySpawn, 0));
 				EnemiesList.add(newEnemy); 
 			}
@@ -382,6 +465,18 @@ public class Model {
 			}
 			
 		}
+		
+		
+		//cheeky escape keys for checking if gameWon or gameLost states work
+		else if(Controller.getInstance().isKeyXPressed()) {
+			gameWon = true;
+		}
+		else if(Controller.getInstance().isKeyZPressed()) {
+			gameLost = true;
+			
+		}
+		
+		//Puts player idle if no keys are pressed
 		else {
 			Player.setDirection(0);
 		}
@@ -422,11 +517,72 @@ public class Model {
 	//check if need to set the gameLost or gameWon flag
 	private void stateLogic() {
 		//make if statement to check for advance to next level
-		Gun = gunType.get(level);
-		EnemiesList = enemyLists.get(level);
-		BulletList = bulletLists.get(level);
-		//make if statement to check for gameLost
-		//make if statement to check for gameWon
+		if (Score >= 15 && Score < 100) {
+			level = 1;
+			EnemiesList = enemyLists.get(level);
+			BulletList = bulletLists.get(level);
+			if (revives == 3) {
+				Player.setHealth(100);
+				revives = 2;
+			}
+			
+		}
+		if (Score >= 100 && Score < 300) {
+			level = 2;
+			Gun = gunType.get(level);
+			//adjust gun2 position
+			Gun.setCentre(new Point3f(Player.getCentre().getX()+15, Player.getCentre().getY()+25,0));
+			EnemiesList = enemyLists.get(level);
+			BulletList = bulletLists.get(level);
+			if (revives == 2) {
+				Player.setHealth(100);
+				revives = 1;
+			}
+		}
+		if (Score >= 300) {
+			level = 3;
+			Gun = gunType.get(level);
+			//adjust gun2 position
+			Gun.setCentre(new Point3f(Player.getCentre().getX()+10, Player.getCentre().getY(),0));
+			EnemiesList = enemyLists.get(level);
+			BulletList = bulletLists.get(level);
+			if (revives == 1) {
+				Player.setHealth(100);
+				revives = 0;
+			}
+		}
+		//checks if won game
+		if (Score >= 1000) {
+			gameWon = true;
+		}
+		
+		//if statement to check for gameLost
+		if (Player.getHealth() <= 0 ) {
+			//plays losing sound
+			if (!gameLost) {
+				String soundName = "res/gameOverSound.wav";    
+				AudioInputStream audioInputStream;
+				try {
+					audioInputStream = AudioSystem.getAudioInputStream(new File(soundName).getAbsoluteFile());
+					Clip clip = AudioSystem.getClip();
+					clip.open(audioInputStream);
+					clip.start();
+				} catch (UnsupportedAudioFileException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (LineUnavailableException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			gameLost = true;
+			
+			
+		}
 		
 	}
 
@@ -458,10 +614,23 @@ public class Model {
 			dx = -25;
 			dy = 0;
 		}
+		else if (level == 3) {
+			dx = -10;
+			dy = 20;
+		}
 		
 		newBullet.changeCentre(Player.getCentre().getX()+dx,Player.getCentre().getY()+dy,0.0f);
 		BulletList.add(newBullet);
 		
+		
+		
+	}
+	//function to reset game
+	public void resetGame() {
+		gameLost = false;
+		Score = 0;
+		Player.setHealth(100);
+		level = 0;
 		
 		
 	}
@@ -497,6 +666,18 @@ public class Model {
 	public void setLevel(int x) {
 		this.level = x;
 	}
+	
+	public String getBackground(int level) {
+		return backgroundType.get(level);
+	}
+	public boolean isGameLost() {
+		return this.gameLost;
+	}
+	public boolean isGameWon() {
+		return this.gameWon;
+	}
+	
+	
 
 
 };

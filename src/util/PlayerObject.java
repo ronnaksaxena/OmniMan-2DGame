@@ -27,4 +27,5 @@ public class PlayerObject extends GameObject {
 	public void setDirection(int x) {
 		direction = x;
 	}
+
 }

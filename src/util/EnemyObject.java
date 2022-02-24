@@ -5,12 +5,13 @@ public class EnemyObject extends GameObject implements Cloneable {
 	public double curAngle = 0.0;
 	private double speed = 1.0;
 	private int damage = 5;
-	private int scoreIncrease = 1;
 	
 	
-	public EnemyObject (String textureLocation,int width,int height,Point3f centre, double curAngle) {
+	public EnemyObject (String textureLocation,int width,int height,Point3f centre, double curAngle, double sp, int dmg) {
 		super(textureLocation,width, height,centre);
 		this.curAngle = curAngle;
+		this.speed = sp;
+		this.damage = dmg;
 	}
 	
 	public void setcurAngle(double newAngle) {
@@ -25,6 +26,12 @@ public class EnemyObject extends GameObject implements Cloneable {
     {
         return super.clone();
     }
+	public double getSpeed() {
+		return this.speed;
+	}
+	public double getDamage() {
+		return this.damage;
+	}
 	
 }
 

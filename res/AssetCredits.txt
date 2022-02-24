@@ -1,0 +1,14 @@
+Art Credits:
+
+Gun Assets by Kay Lousberg via itch.io
+Bullet Assets by Wenrexa via itch.io
+Virus Assets by SbaDany via itch.io
+
+Background Art by:
+ansimuz via itch.io
+Muhammad Setiawan via Freepik
+Ozz Design via shutterstock
+
+Sound Credits:
+all sounds found from ZapSplat.com
+code to play sound taken from Rahul via stackoverflow.com

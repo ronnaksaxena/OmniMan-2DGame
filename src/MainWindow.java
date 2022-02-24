@@ -114,6 +114,23 @@ public class MainWindow {
 
 			//wait till next time step 
 			while (FrameCheck > System.currentTimeMillis()){} 
+			
+			//check if game ended
+			if (gameworld.isGameLost()) {
+				
+				JButton retryButton = new JButton("retry");  // start button 
+				retryButton.addActionListener(new ActionListener()
+				{ 
+					@Override
+					public void actionPerformed(ActionEvent e) { 
+						gameworld.resetGame();
+					}});  
+				retryButton.setBounds(400, 500, 200, 40);  
+
+				frame.add(retryButton);  
+				frame.setVisible(true); 
+
+			}
 
 
 			if(startGame)

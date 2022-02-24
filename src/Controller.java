@@ -49,7 +49,8 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 	private static boolean KeyDPressed= false;
 	private static boolean KeyWPressed= false;
 	private static boolean KeySpacePressed= false;
-	private static boolean KeyXPressed = false;
+	private static boolean KeyXPressed = false; //shortcut for game over
+	private static boolean KeyZPressed = false; //shortcut for game won
 	private static boolean mouseClicked = false;
 	public static int mouseX = 0;
 	public static int mouseY = 0;
@@ -85,6 +86,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 		case 'w':setKeyWPressed(true);break;
 		case 'd':setKeyDPressed(true);break;
 		case 'x':setKeyXPressed(true);break;
+		case 'z':setKeyZPressed(true);break;
 		case ' ':setKeySpacePressed(true);break;   
 		default:
 			//System.out.println("Controller test:  Unknown key pressed");
@@ -105,6 +107,7 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 		case 'w':setKeyWPressed(false);break;
 		case 'd':setKeyDPressed(false);break;
 		case 'x':setKeyXPressed(false);break;
+		case 'z':setKeyZPressed(false);break;
 		case ' ':setKeySpacePressed(false);break;   
 		default:
 			//System.out.println("Controller test:  Unknown key pressed");
@@ -157,15 +160,25 @@ public class Controller implements KeyListener, MouseListener, MouseMotionListen
 	public void setKeyXPressed(boolean keyXPressed) {
 		KeyXPressed = keyXPressed;
 	}
+	
+	public boolean isKeyXPressed() {
+		return KeyXPressed;
+	}
+	
+	public void setKeyZPressed(boolean keyZPressed) {
+		KeyZPressed = keyZPressed;
+	}
+	
+	public boolean isKeyZPressed() {
+		return KeyZPressed;
+	}
 
 
 	public boolean isKeySpacePressed() {
 		return KeySpacePressed;
 	}
 
-	public boolean isKeyXPressed() {
-		return KeyXPressed;
-	}
+	
 
 
 	public void setKeySpacePressed(boolean keySpacePressed) {
