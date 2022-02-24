@@ -634,6 +634,8 @@ public class Model {
 		Player.setCentre(new Point3f(500, 500, 0));
 		level = 0;
 		revives = 0;
+		isTimerRunning = false;
+		curClicks = 0;
 		//addTypes to HashMaps
 		addGuns();
 		addEnemies();
