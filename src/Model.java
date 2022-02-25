@@ -539,7 +539,7 @@ public class Model {
 				revives += 1;
 			}
 		}
-		if (Score >= 1000) {
+		if (Score >= 750) {
 			level = 3;
 			Gun = gunType.get(level);
 			//adjust gun2 position
@@ -552,7 +552,7 @@ public class Model {
 			}
 		}
 		//checks if won game
-		if (Score >= 3000) {
+		if (Score >= 2500) {
 			gameWon = true;
 		}
 		
