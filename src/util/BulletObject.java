@@ -1,5 +1,10 @@
 package util;
 
+/*
+
+Created by Ronnak Saxena on 27/02/2022 (Student ID: 21210758)
+
+*/
 public class BulletObject extends GameObject implements Cloneable {
 	private double  angle = 0.0;
 	private double scaleX = 0.0; //change back to static

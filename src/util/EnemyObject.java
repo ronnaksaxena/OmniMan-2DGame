@@ -1,5 +1,10 @@
 package util;
 
+/*
+
+Created by Ronnak Saxena on 27/02/2022 (Student ID: 21210758)
+
+*/
 public class EnemyObject extends GameObject implements Cloneable {
 	//direction the enemy is moving towards or away
 	public double curAngle = 0.0;

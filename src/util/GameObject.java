@@ -23,6 +23,12 @@ SOFTWARE.
 
    (MIT LICENSE ) e.g do what you want with this :-) 
  */ 
+
+/*
+
+Created by Ronnak Saxena on 27/02/2022 (Student ID: 21210758)
+
+*/
 public class GameObject {
 
 	protected Point3f centre= new Point3f(0,0,0);			// Centre of object, using 3D as objects may be scaled  

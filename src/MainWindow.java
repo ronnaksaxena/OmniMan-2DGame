@@ -48,6 +48,11 @@ SOFTWARE.
    (MIT LICENSE ) e.g do what you want with this :-)
  */ 
 
+/*
+
+Created by Ronnak Saxena on 27/02/2022 (Student ID: 21210758)
+
+*/
 
 
 public class MainWindow {
@@ -115,21 +120,6 @@ public class MainWindow {
 			//wait till next time step 
 			while (FrameCheck > System.currentTimeMillis()){} 
 			
-			
-			/*
-			JButton retryButton = new JButton("retry");  // start button 
-			retryButton.addActionListener(new ActionListener()
-			{ 
-				@Override
-				public void actionPerformed(ActionEvent e) { 
-					gameworld.resetGame();
-					System.out.println("got here");
-				}});  
-			retryButton.setBounds(400, 500, 200, 40);  
-
-			frame.add(retryButton);  
-			frame.setVisible(true); 
-			*/
 
 
 

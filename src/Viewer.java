@@ -47,6 +47,12 @@ SOFTWARE.
 
  * Credits: Kelly Charles (2020)
  */ 
+
+/*
+
+Created by Ronnak Saxena on 27/02/2022 (Student ID: 21210758)
+
+*/
 public class Viewer extends JPanel {
 	private long CurrentAnimationTime= 0; 
 
